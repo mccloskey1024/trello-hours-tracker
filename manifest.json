@@ -11,7 +11,7 @@
   ],
   "connectors": {
     "iframe": {
-      "url": "./dashboard.html"
+      "url": "https://mccloskey1024.github.io/trello-hours-tracker/dashboard.html"
     }
   }
 }
