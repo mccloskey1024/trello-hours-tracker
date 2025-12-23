@@ -1,4 +1,4 @@
-html<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -524,6 +524,9 @@ html<!DOCTYPE html>
         <button id="connect-btn" class="btn">
           Connect to Trello
         </button>
+        <button id="clear-btn" class="btn btn-secondary" onclick="clearCredentials()" style="display: none;">
+          Clear Saved Credentials
+        </button>
       </div>
     </div>
 
@@ -582,6 +585,52 @@ html<!DOCTYPE html>
     let useClockify = false;
     let currentBoardId = '';
 
+    // Load saved credentials on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      // Always enable Clockify by default
+      const toggle = document.getElementById('clockify-toggle');
+      const fields = document.getElementById('clockify-fields');
+      toggle.classList.add('active');
+      fields.classList.add('active');
+      useClockify = true;
+
+      const savedTrelloKey = localStorage.getItem('trello_api_key');
+      const savedTrelloToken = localStorage.getItem('trello_api_token');
+      const savedClockifyKey = localStorage.getItem('clockify_api_key');
+      const savedClockifyWorkspace = localStorage.getItem('clockify_workspace_id');
+
+      if (savedTrelloKey) document.getElementById('api-key').value = savedTrelloKey;
+      if (savedTrelloToken) document.getElementById('api-token').value = savedTrelloToken;
+      if (savedClockifyKey) document.getElementById('clockify-key').value = savedClockifyKey;
+      if (savedClockifyWorkspace) document.getElementById('clockify-workspace').value = savedClockifyWorkspace;
+
+      // Show clear button if credentials exist
+      if (savedTrelloKey && savedTrelloToken) {
+        document.getElementById('clear-btn').style.display = 'inline-block';
+        // Auto-connect if credentials exist
+        document.getElementById('connect-btn').click();
+      }
+    });
+
+    // Clear saved credentials
+    function clearCredentials() {
+      if (confirm('Are you sure you want to clear all saved credentials?')) {
+        localStorage.removeItem('trello_api_key');
+        localStorage.removeItem('trello_api_token');
+        localStorage.removeItem('clockify_api_key');
+        localStorage.removeItem('clockify_workspace_id');
+        localStorage.removeItem('use_clockify');
+        
+        document.getElementById('api-key').value = '';
+        document.getElementById('api-token').value = '';
+        document.getElementById('clockify-key').value = '';
+        document.getElementById('clockify-workspace').value = '';
+        document.getElementById('clear-btn').style.display = 'none';
+        
+        showSuccess('Credentials cleared! Enter new credentials to connect.');
+      }
+    }
+
     function toggleClockify() {
       const toggle = document.getElementById('clockify-toggle');
       const fields = document.getElementById('clockify-fields');
@@ -589,6 +638,9 @@ html<!DOCTYPE html>
       toggle.classList.toggle('active');
       fields.classList.toggle('active');
       useClockify = toggle.classList.contains('active');
+      
+      // Save preference
+      localStorage.setItem('use_clockify', useClockify);
     }
 
     // Parse hours from card description
@@ -739,6 +791,14 @@ html<!DOCTYPE html>
         }
 
         const boards = await response.json();
+
+        // Save credentials to localStorage
+        localStorage.setItem('trello_api_key', apiKey);
+        localStorage.setItem('trello_api_token', apiToken);
+        if (useClockify) {
+          localStorage.setItem('clockify_api_key', clockifyKey);
+          localStorage.setItem('clockify_workspace_id', clockifyWorkspace);
+        }
 
         // Populate board select
         const select = document.getElementById('board-select');
