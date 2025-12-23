@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project Hours Dashboard</title>
+  <title>Legal Immigration Project Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * {
@@ -59,38 +59,6 @@
       padding: 2.5rem;
       margin-bottom: 3rem;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-    }
-    
-    .input-group {
-      margin-bottom: 1.5rem;
-    }
-    
-    .input-label {
-      display: block;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #cbd5e1;
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    
-    .select-field {
-      width: 100%;
-      padding: 1rem 1.25rem;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(139, 92, 246, 0.3);
-      border-radius: 12px;
-      color: #e8eaf6;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-    }
-    
-    .select-field:focus {
-      outline: none;
-      border-color: #8b5cf6;
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
     }
     
     .btn {
@@ -268,6 +236,7 @@
       font-size: 0.9rem;
       color: #94a3b8;
       font-family: 'JetBrains Mono', monospace;
+      margin-top: 0.5rem;
     }
     
     .list-badge {
@@ -327,8 +296,8 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1 class="title">Project Dashboard</h1>
-      <p class="subtitle">Real-Time Hours Tracking</p>
+      <h1 class="title">Legal Immigration</h1>
+      <p class="subtitle">Project Dashboard</p>
     </div>
 
     <div id="loading" class="loading">
@@ -338,47 +307,39 @@
 
     <div id="dashboard" style="display: none;">
       <div class="config-section">
-        <div class="input-group">
-          <label class="input-label">Select Project</label>
-          <select id="board-select" class="select-field">
-            <option value="">Choose a project...</option>
-          </select>
-        </div>
         <button id="refresh-btn" class="btn">Refresh Data</button>
       </div>
 
-      <div id="stats-area" style="display: none;">
-        <div class="stats-section">
-          <div class="stat-card">
-            <div class="stat-label">Estimated Hours</div>
-            <div class="stat-value" id="estimated-hours">0</div>
-            <div class="stat-source">From Project Plan</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-label">Hours Tracked</div>
-            <div class="stat-value" id="burned-hours">0</div>
-            <div class="stat-source">Time Logged</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-label">Progress</div>
-            <div class="stat-value" id="progress-percent">0%</div>
-            <div class="progress-bar">
-              <div class="progress-fill" id="progress-bar" style="width: 0%"></div>
-            </div>
-          </div>
+      <div class="stats-section">
+        <div class="stat-card">
+          <div class="stat-label">Estimated Hours</div>
+          <div class="stat-value" id="estimated-hours">0</div>
+          <div class="stat-source">From Scope</div>
         </div>
 
-        <div class="cards-section">
-          <h2 class="section-title">Tasks (<span id="task-count">0</span>)</h2>
-          <div id="loading-cards" class="loading">
-            <div class="spinner"></div>
-            Loading tasks...
-          </div>
-          <div class="cards-list" id="cards-list"></div>
-          <div class="last-updated" id="last-updated"></div>
+        <div class="stat-card">
+          <div class="stat-label">Hours Tracked</div>
+          <div class="stat-value" id="burned-hours">0</div>
+          <div class="stat-source">From Clockify</div>
         </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Progress</div>
+          <div class="stat-value" id="progress-percent">0%</div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cards-section">
+        <h2 class="section-title">Tasks (<span id="task-count">0</span>)</h2>
+        <div id="loading-cards" class="loading">
+          <div class="spinner"></div>
+          Loading tasks...
+        </div>
+        <div class="cards-list" id="cards-list"></div>
+        <div class="last-updated" id="last-updated"></div>
       </div>
     </div>
   </div>
@@ -387,23 +348,149 @@
     // ⚠️ CONFIGURATION - Replace these with your actual credentials
     const CONFIG = {
       trelloApiKey: 'ca15232391291779438a554ca25af5cd',
-      trelloApiToken: 'YTTAc2656d5dccb9dde370fc14c4c12395ea447fae80eaaacefed823248a80653a00188888A6',
+      trelloApiToken: 'ATTAc2656d5dccb9dde370fc14c4c12395ea447fae80eaaacefed823248a80653a00188888A6N',
+      trelloBoardId: 'XdwJCb6R',  // Your main projects board
+      clientFieldName: 'Clients',  // Name of custom field that identifies clients
+      clientFieldValue: 'ViaLegal Immigration',  // Exact value for this client
       clockifyApiKey: 'NmQwZGEzYzctMGM0My00OTc5LThiOGMtZWZmZmQ0YzhkZThj',
-      clockifyWorkspaceId: '66d772a39878f0442f15ac52'
+      clockifyWorkspaceId: '66d772a39878f0442f15ac52',
+      clockifyProjectName: 'ViaLegal Immigration',  // Name of project in Clockify
+      scopeTaskFieldName: 'Scope Task',  // Name of custom field for scope tasks
+      totalEstimatedHoursFieldName: 'Total Scope Estimated Hours'  // Field showing total hours
     };
 
-    let currentBoardId = '';
+    // Mapping of scope tasks to estimated hours (from your SOW)
+    const SCOPE_HOURS = {
+      'Starter Package': 27.5,  // Average of 25-30
+      'InTaker Migration': 17.5,  // Average of 15-20
+      'Calendly Migration': 5,
+      'WhatsApp Integration': 8,
+      'Outlook Integration': 5,
+      'LocalIQ Integration': 9,  // Average of 8-10
+      'Docketwise Integration': 13.5,  // Average of 12-15
+      'RingCentral Integration': 11,  // Average of 10-12
+      'Project Management': 11,  // Average of 10-12
+      'Training & Handoff': 9,  // Average of 8-10
+      'Contingency Buffer': 10
+    };
 
-    // Parse hours from card description
-    function parseHours(description) {
-      const hoursMatch = (description || '').match(/Hours?:\s*(\d+\.?\d*)/i);
-      return hoursMatch ? parseFloat(hoursMatch[1]) : 0;
+    // Get estimated hours from Trello custom field
+    function getEstimatedHours(card, customFields) {
+      if (!customFields || !card.customFieldItems) return 0;
+      
+      // First, try to get from "Total Scope Estimated Hours" field
+      const totalHoursField = customFields.find(f => 
+        f.name.toLowerCase() === CONFIG.totalEstimatedHoursFieldName.toLowerCase()
+      );
+      
+      if (totalHoursField) {
+        const fieldValue = card.customFieldItems.find(item => 
+          item.idCustomField === totalHoursField.id
+        );
+        
+        if (fieldValue && fieldValue.value) {
+          if (fieldValue.value.number !== undefined) {
+            return parseFloat(fieldValue.value.number);
+          }
+          if (fieldValue.value.text !== undefined) {
+            const num = parseFloat(fieldValue.value.text);
+            if (!isNaN(num)) return num;
+          }
+        }
+      }
+      
+      // Fallback: Try to get from "Scope Task" field and map to SCOPE_HOURS
+      const scopeTaskField = customFields.find(f => 
+        f.name.toLowerCase() === CONFIG.scopeTaskFieldName.toLowerCase()
+      );
+      
+      if (scopeTaskField) {
+        const fieldValue = card.customFieldItems.find(item => 
+          item.idCustomField === scopeTaskField.id
+        );
+        
+        if (fieldValue) {
+          let scopeTaskName = null;
+          
+          // Handle dropdown/list field
+          if (fieldValue.idValue && scopeTaskField.options) {
+            const option = scopeTaskField.options.find(opt => opt.id === fieldValue.idValue);
+            if (option) scopeTaskName = option.value.text;
+          }
+          
+          // Handle text field
+          if (fieldValue.value && fieldValue.value.text) {
+            scopeTaskName = fieldValue.value.text;
+          }
+          
+          // Look up hours from mapping
+          if (scopeTaskName && SCOPE_HOURS[scopeTaskName]) {
+            return SCOPE_HOURS[scopeTaskName];
+          }
+        }
+      }
+      
+      return 0;
     }
 
-    // Get time entries from Clockify for a specific card
+    // Check if card belongs to this client
+    function isClientCard(card, customFields) {
+      if (!customFields || !card.customFieldItems) return false;
+      
+      const clientField = customFields.find(f => 
+        f.name.toLowerCase() === CONFIG.clientFieldName.toLowerCase()
+      );
+      
+      if (!clientField) return false;
+      
+      const fieldValue = card.customFieldItems.find(item => 
+        item.idCustomField === clientField.id
+      );
+      
+      if (!fieldValue || !fieldValue.value) return false;
+      
+      // Handle dropdown/list field
+      if (fieldValue.idValue && clientField.options) {
+        const option = clientField.options.find(opt => opt.id === fieldValue.idValue);
+        return option && option.value.text.toLowerCase() === CONFIG.clientFieldValue.toLowerCase();
+      }
+      
+      // Handle text field
+      if (fieldValue.value.text) {
+        return fieldValue.value.text.toLowerCase() === CONFIG.clientFieldValue.toLowerCase();
+      }
+      
+      return false;
+    }
+
+    // Get time entries from Clockify filtered by project
     async function getClockifyHours(cardName) {
       try {
-        const response = await fetch(
+        // Get project ID first
+        const projectsResponse = await fetch(
+          `https://api.clockify.me/api/v1/workspaces/${CONFIG.clockifyWorkspaceId}/projects`,
+          {
+            headers: {
+              'X-Api-Key': CONFIG.clockifyApiKey,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        if (!projectsResponse.ok) return 0;
+        
+        const projects = await projectsResponse.json();
+        const project = projects.find(p => 
+          p.name.toLowerCase() === CONFIG.clockifyProjectName.toLowerCase()
+        );
+
+        if (!project) {
+          console.warn(`Project "${CONFIG.clockifyProjectName}" not found in Clockify`);
+          return 0;
+        }
+
+        // Get time entries for this project
+        const entriesResponse = await fetch(
           `https://api.clockify.me/api/v1/workspaces/${CONFIG.clockifyWorkspaceId}/user/me/time-entries`,
           {
             headers: {
@@ -413,12 +500,15 @@
           }
         );
 
-        if (!response.ok) return 0;
+        if (!entriesResponse.ok) return 0;
 
-        const entries = await response.json();
+        const entries = await entriesResponse.json();
         
+        // Filter by project and card name
         const matchingEntries = entries.filter(entry => 
-          entry.description && entry.description.toLowerCase().includes(cardName.toLowerCase())
+          entry.projectId === project.id &&
+          entry.description && 
+          entry.description.toLowerCase().includes(cardName.toLowerCase())
         );
 
         const totalSeconds = matchingEntries.reduce((sum, entry) => {
@@ -467,63 +557,41 @@
       return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
-    // Load boards on page load
-    async function loadBoards() {
-      try {
-        const response = await fetch(
-          `https://api.trello.com/1/members/me/boards?key=${CONFIG.trelloApiKey}&token=${CONFIG.trelloApiToken}`
-        );
-
-        if (!response.ok) {
-          throw new Error('Failed to load projects');
-        }
-
-        const boards = await response.json();
-
-        const select = document.getElementById('board-select');
-        select.innerHTML = '<option value="">Choose a project...</option>';
-        boards.forEach(board => {
-          const option = document.createElement('option');
-          option.value = board.id;
-          option.textContent = board.name;
-          select.appendChild(option);
-        });
-
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
-
-      } catch (error) {
-        document.getElementById('loading').innerHTML = `
-          <div style="color: #ef4444;">
-            Error loading projects. Please contact your administrator.
-          </div>
-        `;
-      }
-    }
-
     // Load board data
-    async function loadBoardData(boardId) {
-      currentBoardId = boardId;
-      document.getElementById('stats-area').style.display = 'block';
-      document.getElementById('loading-cards').style.display = 'block';
-      document.getElementById('cards-list').innerHTML = '';
+    async function loadBoardData() {
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('dashboard').style.display = 'none';
 
       try {
-        const response = await fetch(
-          `https://api.trello.com/1/boards/${boardId}/cards?key=${CONFIG.trelloApiKey}&token=${CONFIG.trelloApiToken}&list=true`
+        // Fetch custom fields for the board
+        const customFieldsResponse = await fetch(
+          `https://api.trello.com/1/boards/${CONFIG.trelloBoardId}/customFields?key=${CONFIG.trelloApiKey}&token=${CONFIG.trelloApiToken}`
+        );
+        const customFields = customFieldsResponse.ok ? await customFieldsResponse.json() : [];
+
+        // Fetch cards
+        const cardsResponse = await fetch(
+          `https://api.trello.com/1/boards/${CONFIG.trelloBoardId}/cards?key=${CONFIG.trelloApiKey}&token=${CONFIG.trelloApiToken}&list=true&customFieldItems=true`
         );
 
-        if (!response.ok) {
+        if (!cardsResponse.ok) {
           throw new Error('Failed to fetch tasks');
         }
 
-        const cards = await response.json();
+        const cards = await cardsResponse.json();
+
+        // Filter cards by client
+        const clientCards = cards.filter(card => isClientCard(card, customFields));
+
+        if (clientCards.length === 0) {
+          throw new Error('No tasks found for this client. Please check the client field configuration.');
+        }
 
         let totalEstimated = 0;
         let totalBurned = 0;
 
-        const cardsWithHours = await Promise.all(cards.map(async (card) => {
-          const estimated = parseHours(card.desc);
+        const cardsWithHours = await Promise.all(clientCards.map(async (card) => {
+          const estimated = getEstimatedHours(card, customFields);
           const burned = await getClockifyHours(card.name);
 
           totalEstimated += estimated;
@@ -541,7 +609,7 @@
         document.getElementById('burned-hours').textContent = totalBurned.toFixed(1);
         document.getElementById('progress-percent').textContent = progress.toFixed(0) + '%';
         document.getElementById('progress-bar').style.width = Math.min(progress, 100) + '%';
-        document.getElementById('task-count').textContent = cards.length;
+        document.getElementById('task-count').textContent = clientCards.length;
 
         const cardsList = document.getElementById('cards-list');
         cardsList.innerHTML = '';
@@ -580,37 +648,25 @@
           cardsList.appendChild(cardEl);
         });
 
-        document.getElementById('loading-cards').style.display = 'none';
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
         document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
 
       } catch (error) {
-        document.getElementById('loading-cards').innerHTML = `
+        document.getElementById('loading').innerHTML = `
           <div style="color: #ef4444;">
-            Error loading tasks. Please try again.
+            Error loading project data. Please contact your administrator.
           </div>
         `;
       }
     }
 
-    // Board selection
-    document.getElementById('board-select').addEventListener('change', (e) => {
-      const boardId = e.target.value;
-      if (!boardId) {
-        document.getElementById('stats-area').style.display = 'none';
-        return;
-      }
-      loadBoardData(boardId);
-    });
-
     // Refresh button
-    document.getElementById('refresh-btn').addEventListener('click', () => {
-      if (currentBoardId) {
-        loadBoardData(currentBoardId);
-      }
-    });
+    document.getElementById('refresh-btn').addEventListener('click', loadBoardData);
 
-    // Load boards on page load
-    loadBoards();
+    // Load data on page load
+    loadBoardData();
   </script>
 </body>
 </html>
+Perfect! Here's the complete code. Just select all (Ctrl+A or Cmd+A), copy (Ctrl+C or Cmd+C), and paste into a text editor:
