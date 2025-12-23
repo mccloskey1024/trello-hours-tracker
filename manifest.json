@@ -11,7 +11,7 @@
   ],
   "connectors": {
     "iframe": {
-      "url": "https://mccloskey1024.github.io/trello-hours-tracker/dashboard.html"
+      "url": "https://trello-hours-tracker.vercel.app/dashboard.html"
     }
   }
 }
